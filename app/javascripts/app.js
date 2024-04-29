@@ -115,23 +115,28 @@ $( document ).ready(function() {
 
   // total accounts
   window.accounts = web3.eth.accounts;
-  // account used for making guesses and buying tokens
-  window.account = web3.eth.accounts[1];
+  
+  // Randomly select an account from available accounts
+  var randomIndex = Math.floor(Math.random() * accounts.length);
+  window.account = accounts[randomIndex];
 
   Lottery.deployed().then(function(contractInstance) {
-
+    // Fetch contract owner
     contractInstance.owner.call().then(function(result) {
       owner = result;
       $('#contract-owner').html(owner)
     });
 
+    // Check if the selected account exists in the contract's users mapping
     contractInstance.users.call(account).then(function(result) {
       if(result[0] == "0x0000000000000000000000000000000000000000")
         contractInstance.makeUser({gas: 140000, from: account});
     });
 
-    $('#user-account').html(account);
+    // Display selected account with its index (starting from 1)
+    $('#user-account').html("User " + (randomIndex + 1) + " (" + account + ")");
 
+    // Populate account details
     populateAccount();
   });
 
